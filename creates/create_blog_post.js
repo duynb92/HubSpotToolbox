@@ -173,7 +173,7 @@ const perform = async (z, bundle) => {
         });
     }
 
-    function createOrUpdateBlogRequest(blogId, title, content, contentGroupId, author, tags, language, meta_description, slug) {
+    function createOrUpdateBlogRequest(blogId, title, content, contentGroupId, author, tags, language, meta_description, slug, featuredImage, featuredImageAltText) {
         return z.request({
             url: blogId == null ? `${baseUrl}/cms/v3/blogs/posts` : `${baseUrl}/cms/v3/blogs/posts/${blogId}`,
             method: blogId == null ? 'POST' : 'PATCH',
@@ -190,15 +190,18 @@ const perform = async (z, bundle) => {
                 'postBody': content,
                 'metaDescription': meta_description,
                 'blogAuthorId': author,
-                'contentGroupId': contentGroupId
+                'contentGroupId': contentGroupId,
+                'featuredImage': featuredImage,
+                'featuredImageAltText': featuredImageAltText,
+                'useFeaturedImage': true
             }
         });
     }
 
-    const createBlog = async (title, content, contentGroupId, author, tags, language, meta_description, mainBlogSlug, slug) => {
+    const createBlog = async (title, content, contentGroupId, author, tags, language, meta_description, mainBlogSlug, slug, featuredImage, featuredImageAltText) => {
         var blogSlug = slug.includes("/") ? slug : `/${slug}`;
         let blogId = await findBlogRequest(`${mainBlogSlug}${blogSlug}`);
-        let response = await createOrUpdateBlogRequest(blogId, title, content, contentGroupId, author, tags, language, meta_description, slug);        
+        let response = await createOrUpdateBlogRequest(blogId, title, content, contentGroupId, author, tags, language, meta_description, slug, featuredImage, featuredImageAltText);        
         return blogId == null ? response.json.id : blogId;
     };
 
@@ -221,7 +224,9 @@ const perform = async (z, bundle) => {
             language,
             bundle.inputData.meta_description,
             findMainBlogResponse.slug,
-            bundle.inputData.slug
+            bundle.inputData.slug,
+            bundle.inputData.featured_image,
+            bundle.inputData.featured_image_alt_text
         );
         z.console.log(blog);
         return {
@@ -302,13 +307,29 @@ module.exports = {
                 altersDynamicFields: false,
             },
             {
+                key: 'featured_image',
+                label: 'Featured Image',
+                type: 'string',
+                required: true,
+                list: false,
+                altersDynamicFields: false,
+            },
+            {
+                key: 'featured_image_alt_text',
+                label: 'Featured Image Alt Text',
+                type: 'string',
+                required: true,
+                list: false,
+                altersDynamicFields: false,
+            },
+            {
                 key: 'tags',
                 children: [
                     {
                         key: 'name',
                         label: 'Name',
                         type: 'string',
-                        required: true,
+                        required: false,
                         list: false,
                         altersDynamicFields: false,
                     }
