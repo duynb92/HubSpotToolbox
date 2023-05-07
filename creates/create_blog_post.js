@@ -192,7 +192,8 @@ const perform = async (z, bundle) => {
                 'blogAuthorId': author,
                 'contentGroupId': contentGroupId,
                 'featuredImage': featuredImage,
-                'featuredImageAltText': featuredImageAltText
+                'featuredImageAltText': featuredImageAltText,
+                'useFeaturedImage': true
             }
         });
     }
@@ -224,8 +225,8 @@ const perform = async (z, bundle) => {
             bundle.inputData.meta_description,
             findMainBlogResponse.slug,
             bundle.inputData.slug,
-            bundle.inputData.featuredImage,
-            bundle.inputData.featuredImageAltText
+            bundle.inputData.featured_image,
+            bundle.inputData.featured_image_alt_text
         );
         z.console.log(blog);
         return {
