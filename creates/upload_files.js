@@ -120,7 +120,7 @@ const perform = async (z, bundle) => {
   async function main() {
     const folderId = await createFolder();
     const filesInFolder = await searchFilesInFolder(folderId);
-    z.console.log(filesInFolder);
+    
     bundle.inputData.attachments.forEach(async attachment => {
       if (filesInFolder.includes(attachment.name) === false) {
         const fileId = await createFile(attachment.file, attachment.name, folderId);
