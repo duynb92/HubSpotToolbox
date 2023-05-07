@@ -328,7 +328,7 @@ module.exports = {
                         key: 'name',
                         label: 'Name',
                         type: 'string',
-                        required: true,
+                        required: false,
                         list: false,
                         altersDynamicFields: false,
                     }
