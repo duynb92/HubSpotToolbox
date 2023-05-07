@@ -10,6 +10,7 @@ const perform = async (z, bundle) => {
       },
       body: {
         name: bundle.inputData.folder,
+        // TODO: remove hardcode folder id
         parentFolderId: 113364128265
       }
     });
@@ -70,6 +71,24 @@ const perform = async (z, bundle) => {
     });
   }
 
+  function searchFilesRequest(folderId) {
+    return z.request({
+      url: `${baseUrl}/files/v3/files/search`,
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${bundle.authData.access_token}`,
+      },
+      params: {
+        parentFolderId: folderId
+      }
+    })
+    .then(response => {
+      const results = response.json.results;
+      return results.map(x => x.name);
+    });
+  }
+
   const createFolder = () => {
     return createFolderRequest()
       .then((response) => {
@@ -81,6 +100,7 @@ const perform = async (z, bundle) => {
   }
 
   function createFile(file, name, parentFolderId) {
+    z.console.log(name);
     return uploadFileRequest(file, name, parentFolderId)
       .then((response) => {
         response.throwForStatus();
@@ -90,16 +110,22 @@ const perform = async (z, bundle) => {
       });
   }
 
+  const searchFilesInFolder = (folderId) => {
+    return searchFilesRequest(folderId)
+    .then(fileNames => {
+      return fileNames
+    })
+  };
+
   async function main() {
     const folderId = await createFolder();
+    const filesInFolder = await searchFilesInFolder(folderId);
+    
     bundle.inputData.attachments.forEach(async attachment => {
-      const fileId = await createFile(attachment.file, attachment.name, folderId);
+      if (filesInFolder.includes(attachment.name) === false) {
+        const fileId = await createFile(attachment.file, attachment.name, folderId);
+      }
     });
-    // var fileIds = [];
-    // bundle.inputData.attachments.forEach(async attachment => {
-    //   const fileId = await createFile(attachment.file, folderId);
-    //   fileIds.push(fileId);
-    // });
 
     return {
       accessToken: bundle.authData.access_token,

@@ -21,12 +21,12 @@ describe('Create - upload_files', () => {
           {
             id: 'att159252607',
             name: 'pexels-pixabay-50577.jpg',
-            file: 'https://zapier-dev-files.s3.amazonaws.com/cli-platform/19476/iuZ_uj5RrX_4LEJ1PPsyIEVofGBk_C_01dHaEKmemSHOtx3cABZ352L-w1s4ZucyIXfh-yumxj9kFw9ZMmIrVEY5VwOXQAp43Be-maIS_CMpNqvqpx7x9NNIbH9Nsj7K-FP-raak2DsTEf6dNDrhkN88LXbweGkxpzSv1AOBeog'
+            file: 'https://zapier-dev-files.s3.amazonaws.com/cli-platform/19484/SzevU9sNvxqJrNa2jpVGOwMqRCnv-sPeNaIXc2DcdfCLRGai6PgBsvxr9sEnJIzqK9pO0zAU63Qs4TtaopUao6JPlN-S4tqYQ1RdWAThq77mHNBLaXijxp0GCziY4hG1wxc_fSaPiJSMVUn7Sl02oZDSqFeJErxFXoJ1-7xdj2I'
           },
           {
             id: 'att159711397',
             name: 'panda1200-1.jpg',
-            file: 'https://zapier-dev-files.s3.amazonaws.com/cli-platform/19476/-MzBDCgekrwcdNj7DfoUHkEewORVS8ipSS2qTDe5LqJIzCF5UqSc_-lti_ZLP0O1ZKgZ8oTrHCGnhrSUnifb8e8ZikRps-27kmcqmWXaHg1yN34jXC0wLLYP7qeme0GPyeNep05NS5BivUPKPo4rr1Pobd5vyQofwm1V2_zRMcA '
+            file: 'https://zapier-dev-files.s3.amazonaws.com/cli-platform/19484/_fBhV5ABwAHac8QAoE4aLKLDnkgSc5HND2h_xGZkXXMpTAMzWdAFvrRl4Euk0I1xUE3tVHaqH-v2B67ELnG3_bqHJbNIqfGRezMErX-cB_X-eM5eJAAKMzynZWlZGYrWfGLkJmTYFrg0umYc0SbiyTCyJlAdVJ1HRnvVWCEfEDI'
           }
         ]
       },

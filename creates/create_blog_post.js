@@ -148,7 +148,7 @@ const perform = async (z, bundle) => {
         })
         .then(response => {
             let json = response.json;
-            return json.results.length > 0 ? json.results[0].id : null;
+            return json.results.length > 0 ? json.results[0] : null;
         });
     }
 
@@ -200,9 +200,9 @@ const perform = async (z, bundle) => {
 
     const createBlog = async (title, content, contentGroupId, author, tags, language, meta_description, mainBlogSlug, slug, featuredImage, featuredImageAltText) => {
         var blogSlug = slug.includes("/") ? slug : `/${slug}`;
-        let blogId = await findBlogRequest(`${mainBlogSlug}${blogSlug}`);
-        let response = await createOrUpdateBlogRequest(blogId, title, content, contentGroupId, author, tags, language, meta_description, slug, featuredImage, featuredImageAltText);        
-        return blogId == null ? response.json.id : blogId;
+        let blog = await findBlogRequest(`${mainBlogSlug}${blogSlug}`);
+        let response = await createOrUpdateBlogRequest(blog.id, title, content, contentGroupId, author, tags, language, meta_description, slug, featuredImage, featuredImageAltText);        
+        return blog == null ? response.json : blog;
     };
 
     async function main() {
