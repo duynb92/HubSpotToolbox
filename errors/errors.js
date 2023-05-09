@@ -1,5 +1,6 @@
 /*
-100: Feature Image is required
+100: Blog does not exist
+101: Publish time is required
 */
 
 class CustomError {
@@ -13,7 +14,7 @@ class CustomError {
 
     get category() {
         if (this._code <= 199) {
-            return 'InvalidData';
+            return 'Bad Request';
         }
         return 'Undefined error category';
     }
@@ -21,7 +22,9 @@ class CustomError {
     get message() {
         switch (this._code) {
             case 100:
-                return 'Feature Image is required';
+                return 'Blog does not exist';
+            case 101:
+                return 'Publish time is required';
             default:
                 return 'Undefine error message';
         }
@@ -30,7 +33,7 @@ class CustomError {
 
 module.exports = {
     throwError: (z, errorObj) => {
-        throw new z.errors.Error(errorObj.message, errorObj.category, 100);
+        throw new z.errors.Error(errorObj.message, errorObj.category, errorObj.code);
     },
     customError: CustomError
 }
