@@ -4,13 +4,14 @@
   "description": "HubSpot Toolbox using v3 api",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive -t 10000 -g 'create_blog_post'"
+    "test": "mocha --recursive -t 10000 -g 'update_blog_state'"
   },
   "engines": {
     "node": ">=v16",
     "npm": ">=5.6.0"
   },
   "dependencies": {
+    "moment": "^2.29.4",
     "zapier-platform-core": "14.0.0"
   },
   "devDependencies": {

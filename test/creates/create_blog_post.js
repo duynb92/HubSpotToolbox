@@ -17,7 +17,7 @@ describe('Create - create_blog_post', () => {
 
       inputData: {
         title: 'test updated',
-        content: 'test content updated',
+        content: 'Giới thiệu chương tr&amp;igrave;nh Đối t&amp;aacute;c Giải ph&amp;aacute;p Atlassian (Atlassian Solution Partner Program)',
         blog_url: 'https://resources.agileops.vn/en/blog',
         author_email: 'test_author@email.com',
         author_name: 'test author name',
