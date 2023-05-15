@@ -94,13 +94,12 @@ const perform = async (z, bundle) => {
                 Authorization: `Bearer ${bundle.authData.access_token}`,
             },
             params: {
-                'language__in': language,
                 'email__eq': authorEmail
             }
         });
     }
 
-    function createAuthorRequest(authorEmail, authorName, language) {
+    function createAuthorRequest(authorEmail, authorName) {
         return z.request({
             url: `${baseUrl}/cms/v3/blogs/authors`,
             method: 'POST',
@@ -110,21 +109,20 @@ const perform = async (z, bundle) => {
             },
             body: {
                 'fullName': authorName,
-                'email': authorEmail,
-                'language': language
+                'email': authorEmail
             }
         });
     }
 
-    const createAuthor = (authorEmail, authorName, language) => {
-        return findAuthorRequest(authorEmail, language)
+    const createAuthor = (authorEmail, authorName) => {
+        return findAuthorRequest(authorEmail)
             .then(response => {
                 const json = response.json;
                 return json.total > 0 ? json.results[0].id : null;
             })
             .then(authorId => {
                 if (authorId == null) {
-                    return createAuthorRequest(authorEmail, authorName, language);
+                    return createAuthorRequest(authorEmail, authorName);
                 } else {
                     return { json: { id: authorId } }
                 }
@@ -201,7 +199,7 @@ const perform = async (z, bundle) => {
     const createBlog = async (title, content, contentGroupId, author, tags, language, meta_description, mainBlogSlug, slug, featuredImage, featuredImageAltText) => {
         var blogSlug = slug.includes("/") ? slug : `/${slug}`;
         let blog = await findBlogRequest(`${mainBlogSlug}${blogSlug}`);
-        let response = await createOrUpdateBlogRequest(blog.id, title, content, contentGroupId, author, tags, language, meta_description, slug, featuredImage, featuredImageAltText);        
+        let response = await createOrUpdateBlogRequest(blog == null ? null : blog.id, title, content, contentGroupId, author, tags, language, meta_description, slug, featuredImage, featuredImageAltText);        
         return blog == null ? response.json : blog;
     };
 
@@ -210,9 +208,9 @@ const perform = async (z, bundle) => {
         let contentGroupId = findMainBlogResponse.id;
         let language = findMainBlogResponse.language;
 
-        const tags = await createTags(bundle.inputData.tags, language);
+        const tags = bundle.inputData.tags == null ? [] : await createTags(bundle.inputData.tags, language);
         z.console.log(tags);
-        const author = await createAuthor(bundle.inputData.author_email, bundle.inputData.author_name, language);
+        const author = await createAuthor(bundle.inputData.author_email, bundle.inputData.author_name);
         z.console.log(author);
         
         const blog = await createBlog(
@@ -220,7 +218,7 @@ const perform = async (z, bundle) => {
             bundle.inputData.content, 
             contentGroupId,
             author, 
-            tags.map (x => x.id), 
+            tags.length == 0 ? [] : tags.map (x => x.id), 
             language,
             bundle.inputData.meta_description,
             findMainBlogResponse.slug,
