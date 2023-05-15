@@ -1,13 +1,12 @@
 const perform = async (z, bundle) => {
     const baseUrl = 'https://api.hubapi.com';
 
-    function createTagsRequest(tags, language) {
+    function createTagsRequest(tags) {
         var bodies = [];
         tags.forEach(
             tag => {
                 let body = {
-                    'name': tag.name,
-                    'language': language
+                    'name': tag.name
                 }
                 bodies.push(body);
             });
@@ -24,7 +23,7 @@ const perform = async (z, bundle) => {
         })
     }
 
-    function findTagRequest(tag, language) {
+    function findTagRequest(tag) {
         return z.request({
             url: `${baseUrl}/cms/v3/blogs/tags`,
             method: 'GET',
@@ -33,26 +32,25 @@ const perform = async (z, bundle) => {
                 Authorization: `Bearer ${bundle.authData.access_token}`,
             },
             params: {
-                'language__in': language,
                 'name__eq': tag.name
             }
         });
     }
 
-    async function findTags(tags, language) {
+    async function findTags(tags) {
         const promises = [];
         tags.forEach(
             tag => {
-                promises.push(findTagRequest(tag, language));
+                promises.push(findTagRequest(tag));
             }
         );
         const responses = await Promise.all(promises);
         return responses.map((res) => res.data);
     }
 
-    const createTags = async (tags, language) => {
+    const createTags = async (tags) => {
         const tagIds = [];
-        return await findTags(tags, language)
+        return await findTags(tags)
             .then(responses => {
                 responses.forEach(response => {
                     if (response.results.length > 0) {
@@ -69,7 +67,7 @@ const perform = async (z, bundle) => {
                 if (tagsToCreate.length == 0) {
                     return tagIds;
                 } else {
-                    return createTagsRequest(tagsToCreate, language);
+                    return createTagsRequest(tagsToCreate);
                 }
             })
             .then(response => {
@@ -208,7 +206,7 @@ const perform = async (z, bundle) => {
         let contentGroupId = findMainBlogResponse.id;
         let language = findMainBlogResponse.language;
 
-        const tags = bundle.inputData.tags == null ? [] : await createTags(bundle.inputData.tags, language);
+        const tags = bundle.inputData.tags == null ? [] : await createTags(bundle.inputData.tags);
         z.console.log(tags);
         const author = await createAuthor(bundle.inputData.author_email, bundle.inputData.author_name);
         z.console.log(author);
