@@ -22,7 +22,9 @@ const perform = async (z, bundle) => {
                 return {
                     channelId: x.channelId,
                     channelGuid: x.accountGuid,
-                    type: x.accountType
+                    type: x.accountType,
+                    channelType: x.channelType,
+                    name: x.name
                 }
             })
         });
@@ -53,6 +55,38 @@ module.exports = {
     },
     operation: {
         inputFields: [
+            {
+                key: 'content',
+                label: 'Social Post Content',
+                type: 'string',
+                required: true,
+                list: false,
+                altersDynamicFields: false,
+            },
+            {
+                key: 'channels',
+                children: [
+                    {
+                        key: 'type',
+                        label: 'Channel Type',
+                        type: 'string',
+                        required: true,
+                        list: false,
+                        altersDynamicFields: false,
+                    },
+                    {
+                        key: 'name',
+                        label: 'Name',
+                        type: 'string',
+                        required: true,
+                        list: false,
+                        altersDynamicFields: false,
+                    }
+                ],
+                label: 'Channels',
+                required: true,
+                altersDynamicFields: false,
+            },
         ],
         perform: perform,
     }
