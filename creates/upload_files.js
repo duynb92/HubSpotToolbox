@@ -83,10 +83,10 @@ const perform = async (z, bundle) => {
         parentFolderId: folderId
       }
     })
-    .then(response => {
-      const results = response.json.results;
-      return results.map(x => x.name);
-    });
+      .then(response => {
+        const results = response.json.results;
+        return results.map(x => x.name);
+      });
   }
 
   const createFolder = () => {
@@ -112,15 +112,15 @@ const perform = async (z, bundle) => {
 
   const searchFilesInFolder = (folderId) => {
     return searchFilesRequest(folderId)
-    .then(fileNames => {
-      return fileNames
-    })
+      .then(fileNames => {
+        return fileNames
+      })
   };
 
   async function main() {
     const folderId = await createFolder();
     const filesInFolder = await searchFilesInFolder(folderId);
-    
+
     bundle.inputData.attachments.forEach(async attachment => {
       if (filesInFolder.includes(attachment.name) === false) {
         const fileId = await createFile(attachment.file, attachment.name, folderId);
@@ -148,6 +148,15 @@ module.exports = {
   },
   operation: {
     inputFields: [
+      {
+        key: 'parent_folder',
+        label: 'Parent folder ID',
+        type: 'string',
+        dynamic: 'fetch_folders.id.name',
+        required: true,
+        list: false,
+        altersDynamicFields: false,
+      },
       {
         key: 'folder',
         label: 'Folder',

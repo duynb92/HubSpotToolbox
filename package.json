@@ -1,10 +1,10 @@
 {
   "name": "hub-spot-tool-box",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "HubSpot Toolbox using v3 api",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive -t 10000 -g 'update_blog_state'"
+    "test": "mocha --recursive -t 10000 -g 'fetch_folders'"
   },
   "engines": {
     "node": ">=v16",
