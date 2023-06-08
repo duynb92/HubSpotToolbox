@@ -10,8 +10,7 @@ const perform = async (z, bundle) => {
       },
       body: {
         name: bundle.inputData.folder,
-        // TODO: remove hardcode folder id
-        parentFolderId: 113364128265
+        parentFolderId: bundle.inputData.parent_folder
       }
     });
   }
