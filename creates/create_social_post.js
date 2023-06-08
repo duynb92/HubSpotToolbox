@@ -1,3 +1,6 @@
+const errors = require("../errors/errors");
+const CustomError = errors.customError;
+
 const perform = async (z, bundle) => {
     const baseUrl = 'https://api.hubapi.com';
 
@@ -21,7 +24,7 @@ const perform = async (z, bundle) => {
             return res.json.map(x => {
                 return {
                     channelId: x.channelId,
-                    channelGuid: x.accountGuid,
+                    channelGuid: x.channelGuid,
                     type: x.accountType,
                     channelType: x.channelType,
                     name: x.name
@@ -31,13 +34,66 @@ const perform = async (z, bundle) => {
         return result;
     };
 
+    const createSocialPost = async (content, medias, channel) => {
+        let contentPayload = {
+            body: content
+        }
+        if (medias.length > 0) {
+            contentPayload.photoUrl = medias[0].url
+        }
+        let payload = {
+            channelGuid: channel.channelGuid,
+            status: 'DRAFT',
+            content: contentPayload
+        }
+        z.console.log(payload);
+        return await z.request({
+            url: `${baseUrl}/broadcast/v1/broadcasts`,
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${bundle.authData.access_token}`,
+            },
+            body: payload
+        })
+    }
+
+    const createSocialPosts = async (content, medias, channels) => {
+        const promises = [];
+        channels.forEach(
+            channel => {
+                promises.push(createSocialPost(content, medias, channel));
+            }
+        );
+        const responses = await Promise.all(promises);
+        return responses.map((res) => res.data);
+    }
+
     async function main() {
         const publishingChannels = await fetchPublishingChannels();
+
+        let inputChannels = bundle.inputData.channels;
+        var selectedPublishingChannels = []
+        inputChannels.forEach(element => {
+            let channel = publishingChannels.find(x => x.channelType == element.type && x.name == element.name)
+            if (channel != null) {
+                selectedPublishingChannels.push(channel);
+            }
+        });
+
+        z.console.log(selectedPublishingChannels);
+
+        if (bundle.inputData.medias.length > 1) {
+            errors.throwError(z, new CustomError(102))
+        }
+
+        const socialPosts = await createSocialPosts(bundle.inputData.content, bundle.inputData.medias, selectedPublishingChannels);
+
         let data = {
-            publishingChannels,
-            token: bundle.authData.access_token
+            token: bundle.authData.access_token,
+            selectedPublishingChannels,
+            socialPosts
         };
-        z.console.log(data);
         return data;
     };
 
@@ -61,6 +117,22 @@ module.exports = {
                 type: 'string',
                 required: true,
                 list: false,
+                altersDynamicFields: false,
+            },
+            {
+                key: 'medias',
+                children: [
+                    {
+                        key: 'url',
+                        label: 'Media URL',
+                        type: 'string',
+                        required: true,
+                        list: false,
+                        altersDynamicFields: false,
+                    }
+                ],
+                label: 'Media URLs',
+                required: true,
                 altersDynamicFields: false,
             },
             {

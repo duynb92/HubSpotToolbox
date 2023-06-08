@@ -16,7 +16,16 @@ describe('Create - create_social_post', () => {
       },
 
       inputData: {
-        
+        content: `Introducing our 5 Atlassian Certified #Experts at AgileOps. (tage their Linkedin profile Kiet, Duy, Phong, Sau, Phung)\\n\\nThese brilliant minds have aced the toughest Atlassian certification exams to bring you unparalleled expertise in all things #Atlassian. From configuring #Jira to perfection to optimizing #Confluence for seamless collaboration, they've got you covered. So why settle for anything less when you can work with the best?\\n\\n`,
+        medias: [{
+          url: 'https://images.unsplash.com/flagged/photo-1562503542-2a1e6f03b16b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE0fHx8ZW58MHx8fHx8&w=1000&q=80'
+        }],
+        channels: [
+          {
+            type: 'FacebookPage',
+            name: 'Tyche Corner Tea Express'
+          }
+        ]
       },
     };
 
