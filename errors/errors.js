@@ -2,6 +2,7 @@
 100: Blog does not exist
 101: Publish time is required
 102: Too many medias. Right now HubSpot only support 1 media per social post.
+103: Publish time must be in the future
 */
 
 class CustomError {
@@ -28,6 +29,8 @@ class CustomError {
                 return 'Publish time is required';
             case 102:
                 return 'Too many medias. Right now HubSpot only support 1 media per social post.'
+            case 103:
+                return 'Publish time must be in the future'
             default:
                 return 'Undefine error message';
         }

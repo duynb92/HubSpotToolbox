@@ -20,9 +20,11 @@ describe('Create - create_social_post', () => {
         '\n' +
         "These brilliant minds have aced the toughest Atlassian certification exams to bring you unparalleled expertise in all things #Atlassian. From configuring #Jira to perfection to optimizing #Confluence for seamless collaboration, they've got you covered. So why settle for anything less when you can work with the best?\n" +
         '\n',
-        publish_time: '2023-07-08T14:03:11.394Z',
+        publish_time: null,
         medias: [{
-          url: 'https://images.unsplash.com/flagged/photo-1562503542-2a1e6f03b16b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE0fHx8ZW58MHx8fHx8&w=1000&q=80'
+          url: 'https://24400165.fs1.hubspotusercontent-na1.net/hubfs/24400165/Social%20posts/CONTENT-4/istockphoto-1156235064-640_adpp_is%20(2645fc74-0196-40dc-92e4-8d33c9bf8911)-1.mp4',
+          file_type: 'MOVIE',
+          id: 119662355475
         }],
         channels: [
           {

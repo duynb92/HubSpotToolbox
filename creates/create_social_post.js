@@ -37,21 +37,38 @@ const perform = async (z, bundle) => {
 
     const createSocialPost = (content, medias, channel, publish_time) => {
         return new Promise(async (resolve, reject) => {
-            let contentPayload = {
-                body: content
-            }
-            if (medias.length > 0) {
-                contentPayload.photoUrl = medias[0].url
-            }
             var payload = {
                 channelGuid: channel.channelGuid,
-                content: contentPayload
             }
             if (publish_time == null) {
                 payload.status = 'DRAFT'
             } else {
                 payload.triggerAt = moment(publish_time).valueOf().toString()
             }
+            // Add 'content' to payload
+            let contentPayload = {
+                body: content
+            }
+            var extraData = {}
+            if (medias.length > 0) {
+                let media = medias[0]                
+                if (media.file_type.includes('MOVIE')) {
+                    contentPayload.fileId = media.id
+                    extraData.files = [
+                        {
+                            url: media.url,
+                            mediaType: 'VIDEO',
+                            height: 360,
+                            width: 640,
+                            id: media.id
+                        }
+                    ]
+                } else {
+                    contentPayload.photoUrl = media.url
+                }
+            }
+            payload.content = contentPayload
+            payload.extraData = extraData
             z.console.log(payload);
             resolve(await z.request({
                 url: `${baseUrl}/broadcast/v1/broadcasts`,
@@ -79,6 +96,11 @@ const perform = async (z, bundle) => {
     }
 
     async function main() {
+        let publish_time = bundle.inputData.publish_time
+        if (publish_time != null && moment(bundle.inputData.publish_time).isBefore(moment())) {
+            errors.throwError(z, new CustomError(103))
+        }
+
         const publishingChannels = await fetchPublishingChannels();
 
         let inputChannels = bundle.inputData.channels;
@@ -131,7 +153,7 @@ module.exports = {
             {
                 key: 'publish_time',
                 label: 'Scheduled publish time',
-                description: 'Leave it empty will set the post as DRAFT.',
+                helpText: 'Leave it empty will set the post as DRAFT.',
                 type: 'datetime',
                 required: false,
                 list: false,
@@ -141,15 +163,31 @@ module.exports = {
                 key: 'medias',
                 children: [
                     {
+                        key: 'id',
+                        label: 'Media ID',
+                        type: 'string',
+                        required: true,
+                        list: false,
+                        altersDynamicFields: false,
+                    },
+                    {
                         key: 'url',
                         label: 'Media URL',
                         type: 'string',
                         required: true,
                         list: false,
                         altersDynamicFields: false,
+                    },
+                    {
+                        key: 'file_type',
+                        label: 'File type',
+                        type: 'string',
+                        required: true,
+                        list: false,
+                        altersDynamicFields: false,
                     }
                 ],
-                label: 'Media URLs',
+                label: 'Medias',
                 required: true,
                 altersDynamicFields: false,
             },
