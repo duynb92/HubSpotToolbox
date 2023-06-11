@@ -100,8 +100,7 @@ const perform = async (z, bundle) => {
       }
     })
       .then(response => {
-        const results = response.json.results;
-        return results.map(x => x.name);
+        return response.json.results;
       });
   }
 
@@ -140,23 +139,39 @@ const perform = async (z, bundle) => {
         resolve({});
       }
     });
+  }
 
+  function retreiveFile(file) {
+    return new Promise(resolve => {
+      resolve(file.url);
+    })
   }
 
   const searchFilesInFolder = (folderId) => {
     return searchFilesRequest(folderId)
-      .then(fileNames => {
-        return fileNames
-      })
+    .then(data => {
+      return data.map(x => {
+        return {
+          name: `${x.name}.${x.extension}`,
+          url: x.url
+        }
+      });
+    })
   };
 
   async function main() {
+    if (bundle.inputData.attachments == null || bundle.inputData.attachments.length == 0) {
+      return {}
+    }
     const folderId = await createFolder();
     const filesInFolder = await searchFilesInFolder(folderId);
     z.console.log(filesInFolder);
     var promises = [];
-    bundle.inputData.attachments.forEach(async attachment => {
-      if (filesInFolder.includes(attachment.name) === false) {
+    bundle.inputData.attachments.forEach(attachment => {
+      let existFile = filesInFolder.find(file => attachment.name == file.name)
+      if (existFile != null) {
+        promises.push(retreiveFile(existFile));
+      } else {
         promises.push(createFile(attachment.file, attachment.name, folderId, bundle.inputData.should_return_url));
       }
     });
@@ -209,7 +224,7 @@ module.exports = {
             key: 'id',
             label: 'ID',
             type: 'string',
-            required: true,
+            required: false,
             list: false,
             altersDynamicFields: false,
           },
@@ -217,7 +232,7 @@ module.exports = {
             key: 'name',
             label: 'Name',
             type: 'string',
-            required: true,
+            required: false,
             list: false,
             altersDynamicFields: false,
           },
@@ -225,7 +240,7 @@ module.exports = {
             key: 'file',
             label: 'file',
             type: 'string',
-            required: true,
+            required: false,
             list: false,
             altersDynamicFields: false,
           },

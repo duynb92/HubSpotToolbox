@@ -50,7 +50,7 @@ const perform = async (z, bundle) => {
                 body: content
             }
             var extraData = {}
-            if (medias.length > 0) {
+            if (medias != null && medias.length > 0) {
                 let media = medias[0]                
                 if (media.file_type.includes('MOVIE')) {
                     contentPayload.fileId = media.id
@@ -114,7 +114,7 @@ const perform = async (z, bundle) => {
 
         z.console.log(selectedPublishingChannels);
 
-        if (bundle.inputData.medias.length > 1) {
+        if (bundle.inputData.medias != null && bundle.inputData.medias.length > 1) {
             errors.throwError(z, new CustomError(102))
         }
 
@@ -166,7 +166,7 @@ module.exports = {
                         key: 'id',
                         label: 'Media ID',
                         type: 'string',
-                        required: true,
+                        required: false,
                         list: false,
                         altersDynamicFields: false,
                     },
@@ -174,7 +174,7 @@ module.exports = {
                         key: 'url',
                         label: 'Media URL',
                         type: 'string',
-                        required: true,
+                        required: false,
                         list: false,
                         altersDynamicFields: false,
                     },
@@ -182,13 +182,13 @@ module.exports = {
                         key: 'file_type',
                         label: 'File type',
                         type: 'string',
-                        required: true,
+                        required: false,
                         list: false,
                         altersDynamicFields: false,
                     }
                 ],
                 label: 'Medias',
-                required: true,
+                required: false,
                 altersDynamicFields: false,
             },
             {
