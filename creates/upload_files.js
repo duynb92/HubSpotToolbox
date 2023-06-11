@@ -141,9 +141,13 @@ const perform = async (z, bundle) => {
     });
   }
 
-  function retreiveFile(file) {
+  function retreiveFile(file, shouldReturnUrl) {
     return new Promise(resolve => {
-      resolve(file.url);
+      if (shouldReturnUrl) {
+        resolve(file.url);
+      } else {
+        resolve({});
+      }
     })
   }
 
@@ -170,7 +174,7 @@ const perform = async (z, bundle) => {
     bundle.inputData.attachments.forEach(attachment => {
       let existFile = filesInFolder.find(file => attachment.name == file.name)
       if (existFile != null) {
-        promises.push(retreiveFile(existFile));
+        promises.push(retreiveFile(existFile, bundle.inputData.should_return_url));
       } else {
         promises.push(createFile(attachment.file, attachment.name, folderId, bundle.inputData.should_return_url));
       }
