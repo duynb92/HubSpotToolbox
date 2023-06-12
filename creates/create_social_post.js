@@ -35,15 +35,15 @@ const perform = async (z, bundle) => {
         return result;
     };
 
-    const createSocialPost = (content, medias, channel, publish_time) => {
+    const createSocialPost = (content, medias, channel, schedule_time, state) => {
         return new Promise(async (resolve, reject) => {
             var payload = {
                 channelGuid: channel.channelGuid,
             }
-            if (publish_time == null) {
+            if (state == 'Draft') {
                 payload.status = 'DRAFT'
-            } else {
-                payload.triggerAt = moment(publish_time).valueOf().toString()
+            } else if (state == 'Schedule') {
+                payload.triggerAt = moment(schedule_time).valueOf().toString()
             }
             // Add 'content' to payload
             let contentPayload = {
@@ -84,11 +84,11 @@ const perform = async (z, bundle) => {
         });
     }
 
-    const createSocialPosts = async (content, medias, channels, publish_time) => {
+    const createSocialPosts = async (content, medias, channels, schedule_time, state) => {
         const promises = [];
         channels.forEach(
             channel => {
-                promises.push(createSocialPost(content, medias, channel, publish_time));
+                promises.push(createSocialPost(content, medias, channel, schedule_time, state));
             }
         );
         const responses = await Promise.all(promises);
@@ -96,8 +96,8 @@ const perform = async (z, bundle) => {
     }
 
     async function main() {
-        let publish_time = bundle.inputData.publish_time
-        if (publish_time != null && moment(bundle.inputData.publish_time).isBefore(moment())) {
+        let schedule_time = bundle.inputData.schedule_time
+        if (schedule_time != null && moment(bundle.inputData.schedule_time).isBefore(moment())) {
             errors.throwError(z, new CustomError(103))
         }
 
@@ -118,7 +118,7 @@ const perform = async (z, bundle) => {
             errors.throwError(z, new CustomError(102))
         }
 
-        const socialPosts = await createSocialPosts(bundle.inputData.content, bundle.inputData.medias, selectedPublishingChannels, bundle.inputData.publish_time);
+        const socialPosts = await createSocialPosts(bundle.inputData.content, bundle.inputData.medias, selectedPublishingChannels, bundle.inputData.schedule_time, bundle.inputData.state);
 
         let data = {
             token: bundle.authData.access_token,
@@ -151,9 +151,16 @@ module.exports = {
                 altersDynamicFields: false,
             },
             {
-                key: 'publish_time',
+                key: 'state',
+                label: 'State',
+                helpText: 'Draft: Post this content as DRAFT.\nSchedule: Post and schedule to post this content.\nPublish: Post and publish this content immediately.',
+                required: true,
+                choices: { draft: 'Draft', schedule: 'Schedule', publish: 'Publish'},
+            },
+            {
+                key: 'schedule_time',
                 label: 'Scheduled publish time',
-                helpText: 'Leave it empty will set the post as DRAFT.',
+                helpText: 'This field will be ignored if state is Draft or Publish.',
                 type: 'datetime',
                 required: false,
                 list: false,

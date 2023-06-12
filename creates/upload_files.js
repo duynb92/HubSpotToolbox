@@ -128,11 +128,7 @@ const perform = async (z, bundle) => {
           const file = await checkImportStatus(taskId);
           if (file != null) {
             clearInterval(intervalID);
-            resolve({
-              fileId: file.id,
-              fileUrl: file.url,
-              fileType: file.type
-            });
+            resolve(objectFromFile(file));
           }
         }, 1000);
       } else {
@@ -144,11 +140,19 @@ const perform = async (z, bundle) => {
   function retreiveFile(file, shouldReturnUrl) {
     return new Promise(resolve => {
       if (shouldReturnUrl) {
-        resolve(file.url);
+        resolve(objectFromFile(file));
       } else {
         resolve({});
       }
     })
+  }
+
+  function objectFromFile(file) {
+    return {
+      fileId: file.id,
+      fileUrl: file.url,
+      fileType: file.type
+    }
   }
 
   const searchFilesInFolder = (folderId) => {
@@ -156,8 +160,10 @@ const perform = async (z, bundle) => {
     .then(data => {
       return data.map(x => {
         return {
+          id: x.id,
           name: `${x.name}.${x.extension}`,
-          url: x.url
+          url: x.url,
+          type: x.type
         }
       });
     })
