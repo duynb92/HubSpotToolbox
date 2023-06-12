@@ -20,11 +20,36 @@ describe('Create - create_social_post', () => {
         '\n' +
         "These brilliant minds have aced the toughest Atlassian certification exams to bring you unparalleled expertise in all things #Atlassian. From configuring #Jira to perfection to optimizing #Confluence for seamless collaboration, they've got you covered. So why settle for anything less when you can work with the best?\n" +
         '\n',
+        state: 'Draft',
         publish_time: null,
-        medias: [{
-          url: 'https://24400165.fs1.hubspotusercontent-na1.net/hubfs/24400165/Social%20posts/CONTENT-4/istockphoto-1156235064-640_adpp_is%20(2645fc74-0196-40dc-92e4-8d33c9bf8911)-1.mp4',
-          file_type: 'MOVIE',
-          id: 119662355475
+        medias: [
+        {
+          id: '119732677733',
+          url: 'https://24400165.fs1.hubspotusercontent-na1.net/hubfs/24400165/test/test/pexels-pixabay-50577.jpg',
+          file_type: 'IMG',
+          width: 260,
+          height: 280
+        },
+        {
+          id: '119732677732',
+          url: 'https://24400165.fs1.hubspotusercontent-na1.net/hubfs/24400165/test/test/panda1200-1.jpg',
+          file_type: 'IMG',
+          width: 1280,
+          height: 853
+        },
+        {
+          id: '119732677732',
+          url: 'https://24400165.fs1.hubspotusercontent-na1.net/hubfs/24400165/test/test/panda1200-1.jpg',
+          file_type: 'IMG',
+          width: 1280,
+          height: 853
+        },
+        {
+          id: '119732677732',
+          url: 'https://24400165.fs1.hubspotusercontent-na1.net/hubfs/24400165/test/test/panda1200-1.jpg',
+          file_type: 'IMG',
+          width: 1280,
+          height: 853
         }],
         channels: [
           {

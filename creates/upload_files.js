@@ -151,7 +151,9 @@ const perform = async (z, bundle) => {
     return {
       fileId: file.id,
       fileUrl: file.url,
-      fileType: file.type
+      fileType: file.type,
+      fileWidth: file.width,
+      fileHeight: file.height
     }
   }
 
@@ -163,7 +165,9 @@ const perform = async (z, bundle) => {
           id: x.id,
           name: `${x.name}.${x.extension}`,
           url: x.url,
-          type: x.type
+          type: x.type,
+          width: x.width,
+          height: x.height
         }
       });
     })

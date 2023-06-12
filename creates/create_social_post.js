@@ -51,20 +51,18 @@ const perform = async (z, bundle) => {
             }
             var extraData = {}
             if (medias != null && medias.length > 0) {
-                let media = medias[0]                
+                let media = medias[0]       
+                // If post contains video, HubSpot support only 1 video         
                 if (media.file_type.includes('MOVIE')) {
                     contentPayload.fileId = media.id
                     extraData.files = [
-                        {
-                            url: media.url,
-                            mediaType: 'VIDEO',
-                            height: 360,
-                            width: 640,
-                            id: media.id
-                        }
+                        objectFromMedia(media)
                     ]
                 } else {
                     contentPayload.photoUrl = media.url
+                    if (medias.length > 1) {
+                        extraData.files = medias.map(media => objectFromMedia(media))
+                    }
                 }
             }
             payload.content = contentPayload
@@ -82,6 +80,16 @@ const perform = async (z, bundle) => {
                 return res.json;
             }));
         });
+    }
+
+    function objectFromMedia(media) {
+        return {
+            url: media.url,
+            mediaType: media.file_type == 'MOVIE' ? 'VIDEO' : 'PHOTO',
+            height: media.width,
+            width: media.height,
+            id: media.id
+        }
     }
 
     const createSocialPosts = async (content, medias, channels, schedule_time, state) => {
@@ -114,7 +122,7 @@ const perform = async (z, bundle) => {
 
         z.console.log(selectedPublishingChannels);
 
-        if (bundle.inputData.medias != null && bundle.inputData.medias.length > 1) {
+        if (bundle.inputData.medias != null && bundle.inputData.medias.length > 4) {
             errors.throwError(z, new CustomError(102))
         }
 
@@ -188,6 +196,22 @@ module.exports = {
                     {
                         key: 'file_type',
                         label: 'File type',
+                        type: 'string',
+                        required: false,
+                        list: false,
+                        altersDynamicFields: false,
+                    },
+                    {
+                        key: 'width',
+                        label: 'File width',
+                        type: 'string',
+                        required: false,
+                        list: false,
+                        altersDynamicFields: false,
+                    },
+                    {
+                        key: 'height',
+                        label: 'File height',
                         type: 'string',
                         required: false,
                         list: false,
