@@ -50,23 +50,29 @@ const perform = async (z, bundle) => {
                 body: content
             }
             var extraData = {}
+            var broadcastMediaType = 'NONE'
             if (medias != null && medias.length > 0) {
-                let media = medias[0]       
+                let media = medias[0]
+                contentPayload.photoUrl = media.url
+                contentPayload.fileId = media.id
                 // If post contains video, HubSpot support only 1 video         
                 if (media.file_type.includes('MOVIE')) {
-                    contentPayload.fileId = media.id
+                    contentPayload.thumbUrl = `${media.url}/thumb.jpg`
+                    contentPayload.title = content
                     extraData.files = [
                         objectFromMedia(media)
                     ]
+                    broadcastMediaType = 'VIDEO'
                 } else {
-                    contentPayload.photoUrl = media.url
                     if (medias.length > 1) {
                         extraData.files = medias.map(media => objectFromMedia(media))
                     }
+                    broadcastMediaType = 'PHOTO'
                 }
             }
             payload.content = contentPayload
             payload.extraData = extraData
+            payload.broadcastMediaType = broadcastMediaType
             z.console.log(payload);
             resolve(await z.request({
                 url: `${baseUrl}/broadcast/v1/broadcasts`,
@@ -105,7 +111,8 @@ const perform = async (z, bundle) => {
 
     async function main() {
         let schedule_time = bundle.inputData.schedule_time
-        if (schedule_time != null && moment(bundle.inputData.schedule_time).isBefore(moment())) {
+        let state = bundle.inputData.state
+        if (state == 'Schedule' && schedule_time != null && moment(bundle.inputData.schedule_time).isBefore(moment())) {
             errors.throwError(z, new CustomError(103))
         }
 
@@ -126,7 +133,7 @@ const perform = async (z, bundle) => {
             errors.throwError(z, new CustomError(102))
         }
 
-        const socialPosts = await createSocialPosts(bundle.inputData.content, bundle.inputData.medias, selectedPublishingChannels, bundle.inputData.schedule_time, bundle.inputData.state);
+        const socialPosts = await createSocialPosts(bundle.inputData.content, bundle.inputData.medias, selectedPublishingChannels, bundle.inputData.schedule_time, state);
 
         let data = {
             token: bundle.authData.access_token,
