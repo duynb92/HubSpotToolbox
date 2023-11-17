@@ -16,19 +16,21 @@ describe('Create - upload_files', () => {
       },
 
       inputData: {
+        parent_folder: 119674427830,
         folder: 'test',
         attachments: [
           {
             id: 'att159252607',
             name: 'pexels-pixabay-50577.jpg',
-            file: 'https://zapier-dev-files.s3.amazonaws.com/cli-platform/19484/SzevU9sNvxqJrNa2jpVGOwMqRCnv-sPeNaIXc2DcdfCLRGai6PgBsvxr9sEnJIzqK9pO0zAU63Qs4TtaopUao6JPlN-S4tqYQ1RdWAThq77mHNBLaXijxp0GCziY4hG1wxc_fSaPiJSMVUn7Sl02oZDSqFeJErxFXoJ1-7xdj2I'
+            file: 'https://www.shutterstock.com/image-illustration/cartoon-jpeg-illustration-cute-panda-260nw-58960402.jpg'
           },
           {
             id: 'att159711397',
             name: 'panda1200-1.jpg',
-            file: 'https://zapier-dev-files.s3.amazonaws.com/cli-platform/19484/_fBhV5ABwAHac8QAoE4aLKLDnkgSc5HND2h_xGZkXXMpTAMzWdAFvrRl4Euk0I1xUE3tVHaqH-v2B67ELnG3_bqHJbNIqfGRezMErX-cB_X-eM5eJAAKMzynZWlZGYrWfGLkJmTYFrg0umYc0SbiyTCyJlAdVJ1HRnvVWCEfEDI'
+            file: 'https://cdn.pixabay.com/photo/2016/03/04/22/54/animal-1236875_1280.jpg'
           }
-        ]
+        ],
+        should_return_url: true
       },
     };
 

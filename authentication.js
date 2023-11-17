@@ -44,7 +44,7 @@ module.exports = {
       method: 'POST',
       url: 'https://api.hubapi.com/oauth/v1/token',
     },
-    scope: 'content files files.ui_hidden.read',
+    scope: 'content files files.ui_hidden.read social',
     autoRefresh: true,
   },
 };

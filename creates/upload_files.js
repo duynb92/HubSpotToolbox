@@ -65,8 +65,25 @@ const perform = async (z, bundle) => {
         name: name,
         folderId: parentFolderId,
         access: 'PUBLIC_INDEXABLE',
-        duplicateValidationStrategy: 'NONE'
+        duplicateValidationStrategy: 'RETURN_EXISTING',
+        duplicateValidationScope: 'EXACT_FOLDER'
       }
+    });
+  }
+
+  function checkImportStatus(taskId) {
+    return z.request({
+      url: `${baseUrl}/files/v3/files/import-from-url/async/tasks/${taskId}/status`,
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${bundle.authData.access_token}`,
+      },
+      params: {}
+    }).then(response => {
+      const json = response.json;
+      let status = json.status;
+      return status == 'COMPLETE' ? json.result : null;
     });
   }
 
@@ -83,8 +100,7 @@ const perform = async (z, bundle) => {
       }
     })
       .then(response => {
-        const results = response.json.results;
-        return results.map(x => x.name);
+        return response.json.results;
       });
   }
 
@@ -98,38 +114,89 @@ const perform = async (z, bundle) => {
       });
   }
 
-  function createFile(file, name, parentFolderId) {
-    z.console.log(name);
-    return uploadFileRequest(file, name, parentFolderId)
-      .then((response) => {
-        response.throwForStatus();
-        const result = response.json;
-        z.console.log(result);
-        return result.id
-      });
+  function createFile(file, name, parentFolderId, shouldReturnUrl) {
+    return new Promise(async (resolve) => {
+      let taskId = await uploadFileRequest(file, name, parentFolderId)
+        .then((response) => {
+          response.throwForStatus();
+          const result = response.json;
+          z.console.log(result);
+          return result.id
+        });
+      if (shouldReturnUrl == true) {
+        let intervalID = setInterval(async () => {
+          const file = await checkImportStatus(taskId);
+          if (file != null) {
+            clearInterval(intervalID);
+            resolve(objectFromFile(file));
+          }
+        }, 1000);
+      } else {
+        resolve({});
+      }
+    });
+  }
+
+  function retreiveFile(file, shouldReturnUrl) {
+    return new Promise(resolve => {
+      if (shouldReturnUrl) {
+        resolve(objectFromFile(file));
+      } else {
+        resolve({});
+      }
+    })
+  }
+
+  function objectFromFile(file) {
+    return {
+      fileId: file.id,
+      fileUrl: file.url,
+      fileType: file.type,
+      fileWidth: file.width,
+      fileHeight: file.height
+    }
   }
 
   const searchFilesInFolder = (folderId) => {
     return searchFilesRequest(folderId)
-      .then(fileNames => {
-        return fileNames
-      })
+    .then(data => {
+      return data.map(x => {
+        return {
+          id: x.id,
+          name: `${x.name}.${x.extension}`,
+          url: x.url,
+          type: x.type,
+          width: x.width,
+          height: x.height
+        }
+      });
+    })
   };
 
   async function main() {
+    if (bundle.inputData.attachments == null || bundle.inputData.attachments.length == 0) {
+      return {}
+    }
     const folderId = await createFolder();
     const filesInFolder = await searchFilesInFolder(folderId);
-
-    bundle.inputData.attachments.forEach(async attachment => {
-      if (filesInFolder.includes(attachment.name) === false) {
-        const fileId = await createFile(attachment.file, attachment.name, folderId);
+    z.console.log(filesInFolder);
+    var promises = [];
+    bundle.inputData.attachments.forEach(attachment => {
+      let existFile = filesInFolder.find(file => attachment.name == file.name)
+      if (existFile != null) {
+        promises.push(retreiveFile(existFile, bundle.inputData.should_return_url));
+      } else {
+        promises.push(createFile(attachment.file, attachment.name, folderId, bundle.inputData.should_return_url));
       }
     });
 
+    var files = await Promise.all(promises);
+    z.console.log(files);
+
     return {
-      accessToken: bundle.authData.access_token,
       folderId,
-      attachments: bundle.inputData.attachments
+      attachments: bundle.inputData.attachments,
+      files
     }
   }
 
@@ -171,7 +238,7 @@ module.exports = {
             key: 'id',
             label: 'ID',
             type: 'string',
-            required: true,
+            required: false,
             list: false,
             altersDynamicFields: false,
           },
@@ -179,7 +246,7 @@ module.exports = {
             key: 'name',
             label: 'Name',
             type: 'string',
-            required: true,
+            required: false,
             list: false,
             altersDynamicFields: false,
           },
@@ -187,13 +254,21 @@ module.exports = {
             key: 'file',
             label: 'file',
             type: 'string',
-            required: true,
+            required: false,
             list: false,
             altersDynamicFields: false,
           },
         ],
         label: 'Attachments',
         required: false,
+        altersDynamicFields: false,
+      },
+      {
+        key: 'should_return_url',
+        label: 'Should return file URL',
+        type: 'boolean',
+        required: true,
+        list: false,
         altersDynamicFields: false,
       },
     ],
